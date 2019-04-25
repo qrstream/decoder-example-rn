@@ -114,13 +114,13 @@ export default class QRStreamCapture extends React.Component {
           >
             {({ camera, status}) => {
               if (status !== 'READY') return <PendingView />;
-              return (
-                <View style={{ flex: 0, flexDirection: 'row', justifyContent: 'center' }}>
-                  <TouchableOpacity onPress={() => this._handleBarCodeRead(camera)} style={styles.capture}>
-                    <Text style={{ fontSize: 14 }}> SNAP </Text>
-                  </TouchableOpacity>
-                </View>
-              );
+              // return (
+                {/*<View style={{ flex: 0, flexDirection: 'row', justifyContent: 'center' }}>*/}
+                  {/*<TouchableOpacity onPress={() => this._handleBarCodeRead(camera)} style={styles.capture}>*/}
+                    {/*<Text style={{ fontSize: 14 }}> SNAP </Text>*/}
+                  // </TouchableOpacity>
+                // </View>
+              // );
             }}
           </RNCamera>
         </View>
