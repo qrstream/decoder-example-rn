@@ -1,49 +1,53 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
+import React from 'react';
 
-import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import QRStreamHome from './src/qrshome';
+import QRStreamResult from "./src/qrsresult";
+// import QRStreamCapture from "./src/qrscapture";
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
+export default class QRStream extends React.Component {
+  constructor(props) {
+    super(props);
 
-type Props = {};
-export default class App extends Component<Props> {
+    this.goHome = this.goHome.bind(this);
+    this.newCapture = this.newCapture.bind(this);
+    this.showResult = this.showResult.bind(this);
+    this.state = {
+      status: -1,
+      metadata: {},
+      content: ""
+    }
+  }
+
+  goHome = () => {
+    this.setState({status: -1});
+  }
+  newCapture = () => {
+    this.setState({status: 0});
+  }
+  showResult = (metadata, content) => {
+    this.setState({status: 2, metadata: metadata, content: content});
+  }
+
   render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
-      </View>
-    );
+    let page = <QRStreamHome/>
+
+    switch (this.state.status) {
+      case -1:
+        page = <QRStreamHome onGoHome={this.goHome} onNewCapture={this.newCapture}/>;
+        break;
+      case 2:
+        page = <QRStreamResult metadata={this.state.metadata} content={this.state.content} onGoHome={this.goHome} onNewCapture={this.newCapture}/>
+        break;
+      case 0:
+      case 1:
+        // page = <QRStreamCapture onGoHome={this.goHome} showResult={this.showResult}/>
+        break;
+      default:
+        page = <View />;
+        break;
+    }
+
+    return page;
+    // return <QRStreamResult metadata={{}}/>
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-});
