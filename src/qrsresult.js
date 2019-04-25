@@ -5,10 +5,6 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 // let RNFS = require('react-native-fs');
 
-let isIphoneX = function () {
-  return true;
-}
-
 export default class QRStreamResult extends React.Component {
 
   constructor(props) {
@@ -93,7 +89,7 @@ export default class QRStreamResult extends React.Component {
   }
 }
 
-let topMargin = isIphoneX() ? 40 : 10;
+let topMargin = 40;
 const styles = StyleSheet.create({
   container: {
     flex: 1,

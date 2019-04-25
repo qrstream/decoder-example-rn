@@ -24,7 +24,7 @@ export default class QRStreamHome extends React.Component {
         <View>
           <Button icon={{name: 'camera', type: 'font-awesome', color: 'white'}}
                   title={'Start Capture'}
-                  buttonStyle={{backgroundColor: 'black'}}
+                  buttonStyle={{backgroundColor: 'black', marginLeft: 60, marginRight: 60}}
                   onPress={() => {this.onNewCapture()}}/>
         </View>
       </View>
@@ -32,8 +32,7 @@ export default class QRStreamHome extends React.Component {
   }
 }
 
-let isIphoneX = () => {return true;};
-let topMargin = isIphoneX() ? 40 : 10;
+let topMargin = 40;
 const styles = StyleSheet.create({
   container: {
     flex: 1,

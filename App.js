@@ -2,7 +2,7 @@ import React from 'react';
 
 import QRStreamHome from './src/qrshome';
 import QRStreamResult from "./src/qrsresult";
-// import QRStreamCapture from "./src/qrscapture";
+import QRStreamCapture from "./src/qrscapture";
 
 export default class QRStream extends React.Component {
   constructor(props) {
@@ -40,7 +40,7 @@ export default class QRStream extends React.Component {
         break;
       case 0:
       case 1:
-        // page = <QRStreamCapture onGoHome={this.goHome} showResult={this.showResult}/>
+        page = <QRStreamCapture onGoHome={this.goHome} showResult={this.showResult}/>
         break;
       default:
         page = <View />;
