@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, TextInput, StyleSheet, View } from 'react-native';
+import { Text, TextInput, StyleSheet, View, Share, Alert } from 'react-native';
 import { Button } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -26,6 +26,32 @@ export default class QRStreamResult extends React.Component {
     //     });
     // }
   }
+
+  onShareContent = async () => {
+    console.log(this.metadata);
+    if (this.metadata) {
+      try {
+        const result = await Share.share({
+          message: this.content,
+          title: this.metadata.name
+        });
+
+        if (result.action === Share.sharedAction) {
+          if (result.activityType) {
+            Alert.alert(result.activityType);
+          } else {
+            Alert.alert("Successfully shared!")
+          }
+        } else if (result.action === Share.dismissedAction) {
+          // dismissed
+        }
+      } catch (error) {
+        alert(error.message);
+      }
+    } else {
+      Alert.alert("No content to share, capture the content first!");
+    }
+  };
 
   render() {
     return (
@@ -82,6 +108,7 @@ export default class QRStreamResult extends React.Component {
           <View style={{flex: 1, flexDirection: 'row', alignSelf: 'center', justifyContent: 'space-between'}}>
             <Button icon={{name: 'home', type: 'font-awesome', color: 'white'}} title={'Home'} buttonStyle={{marginRight: 10, backgroundColor: 'black'}} onPress={() => {this.onGoHome()}}/>
             <Button icon={{name: 'camera', type: 'font-awesome', color: 'white'}} title={'New'} buttonStyle={{marginLeft: 10, backgroundColor: 'black'}} onPress={() => {this.onNewCapture()}}/>
+            <Button icon={{name: 'share', type: 'font-awesome', color: 'white'}} title={'Share'} buttonStyle={{marginLeft: 20, backgroundColor: 'black'}} onPress={this.onShareContent}/>
           </View>
         </View>
       </View>
