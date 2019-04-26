@@ -1,23 +1,57 @@
 import React from 'react';
-import {Text, StyleSheet, Platform, View, Dimensions, TouchableOpacity} from 'react-native';
+import {Text, StyleSheet, Platform, View, Dimensions, Alert} from 'react-native';
 import {RNCamera} from 'react-native-camera';
 import {Button} from 'react-native-elements';
 
 import Decoder from 'qrstream-decoder';
 
-const PendingView = () => (
-  <View
-    style={{
-      flex: 1,
-      backgroundColor: 'lightgreen',
-      justifyContent: 'center',
-      alignItems: 'center',
-    }}
-  >
-    <Text>Please authorize to use camera in </Text>
-    <Text>"Settings -> Privacy -> Camera -> QRStream"</Text>
-  </View>
-);
+var {width, height} = Dimensions.get('window');
+
+class PendingView extends React.Component {
+  render () {
+    const errorMessage = Platform.select({
+      ios: "Please authorize to use camera in \n Settings -> Privacy -> Camera -> QRStream",
+      android: "Please authorize to use camera!"
+    })
+    return (
+      <View style={{flex: 1, paddingTop: '30%', backgroundColor: 'lightgreen', alignItems: 'center'}}>
+        <Text>{errorMessage}</Text>
+      </View>
+    )
+  }
+}
+
+class SquareConner extends React.Component {
+  render() {
+    let squareSize = this.props.size;
+    let offset = 4;
+    let cornerSize = 20;
+    let lineWidth = 2;
+    let lineColor = '#37b44a';
+    return (
+      <View
+        style={{height: squareSize, width: squareSize}}>
+        <View style={{position: 'absolute', left: offset, top: offset}}>
+          <View style={{height: lineWidth, width: cornerSize + lineWidth, backgroundColor: lineColor}}/>
+          <View style={{height: cornerSize, width: lineWidth, backgroundColor: lineColor}}/>
+        </View>
+        <View style={{position: 'absolute', right: offset, top: offset, transform: [{rotate: '90deg'}]}}>
+          <View style={{height: lineWidth, width: cornerSize + lineWidth, backgroundColor: lineColor}}/>
+          <View style={{height: cornerSize, width: lineWidth, backgroundColor: lineColor}}/>
+        </View>
+        <View style={{position: 'absolute', left: offset, bottom: offset, transform: [{rotateZ: '-90deg'}]
+        }}>
+          <View style={{height: lineWidth, width: cornerSize + lineWidth, backgroundColor: lineColor}}/>
+          <View style={{height: cornerSize, width: lineWidth, backgroundColor: lineColor}}/>
+        </View>
+        <View style={{position: 'absolute', right: offset, bottom: offset, transform: [{rotateZ: '180deg'}]}}>
+          <View style={{height: lineWidth, width: cornerSize + lineWidth, backgroundColor: lineColor}}/>
+          <View style={{height: cornerSize, width: lineWidth, backgroundColor: lineColor}}/>
+        </View>
+      </View>
+    )
+  }
+}
 
 export default class QRStreamCapture extends React.Component {
   constructor(props) {
@@ -88,10 +122,8 @@ export default class QRStreamCapture extends React.Component {
   };
 
   render() {
-    var {height, width} = Dimensions.get('window');
-    let size = Math.min(height / 2, width) - 20;
-    let topMargin = 30;
-    let ratio = 1.0 * (size + 20 + topMargin) / height;
+    let cameraWidth = width;
+
     let progressWidth = this.state.done && (100.0 / this.state.done.length);
     let getBorderRadius = function(key, length) {
       switch (key) {
@@ -105,79 +137,83 @@ export default class QRStreamCapture extends React.Component {
     }
 
     return (
-      <View style={{flex: 1}}>
-        <View style={{flex: ratio, alignItems: 'center', justifyContent: 'center'}}>
-          <RNCamera
-            captureAudio={false}
-            style={{width: size, height: size, marginTop: topMargin}}
-            onBarCodeRead={this._handleBarCodeRead}
-          >
-            {({ camera, status}) => {
-              if (status !== 'READY') return <PendingView />;
-              // return (
+      <View style={styles.container}>
+        <View style={{flex: 1, alignItems: 'center'}}>
+          <View>
+            <RNCamera captureAudio={false} style={{width, height}} onBarCodeRead={this._handleBarCodeRead}>
+              {({ camera, status}) => {
+                if (status !== 'READY') return <PendingView/>;
+                // return (
                 {/*<View style={{ flex: 0, flexDirection: 'row', justifyContent: 'center' }}>*/}
-                  {/*<TouchableOpacity onPress={() => this._handleBarCodeRead(camera)} style={styles.capture}>*/}
-                    {/*<Text style={{ fontSize: 14 }}> SNAP </Text>*/}
-                  // </TouchableOpacity>
+                {/*<TouchableOpacity onPress={() => this._handleBarCodeRead(camera)} style={styles.capture}>*/}
+                {/*<Text style={{ fontSize: 14 }}> SNAP </Text>*/}
+                // </TouchableOpacity>
                 // </View>
-              // );
-            }}
-          </RNCamera>
-        </View>
+                // );
+              }}
+            </RNCamera>
 
-        <View style={{flex: 1 - ratio, backgroundColor: 'transparent'}}>
-          <View style={{
-            marginBottom: 10, marginHorizontal: 10, height: 10,
-            borderRadius: 5,
-            flexDirection: 'row'}}>
-            {
-              this.state.done && this.state.done.map((done, key) => (
-                <View key={key} style={[{flex: progressWidth, backgroundColor: done ? 'green': '#ccc'}, getBorderRadius(key, this.state.done.length)]}/>
-              ))
-            }
-          </View>
-          <Text style={{fontSize: 16, fontWeight: 'bold', alignSelf: 'center', justifyContent: 'space-between'}}>
-            {this.state.line}
-          </Text>
-
-          <View style={styles.metadata}>
-            {this.state.status === 1 &&
-            <View>
-              <View style={styles.metadataEntry}>
-                <Text style={styles.metadataTitle}> Content Type: </Text>
-                <Text style={styles.metadataContent}> {this.state.metadata.type} </Text>
+            <View style={{position: 'absolute', left: 0, right: 0, top: 0, bottom: 0}}>
+              <View style={{height: 40, width: width, backgroundColor: 'white', opacity: 0.8}}/>
+              <View style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}}>
+                <View style={{height: cameraWidth, width: (width - cameraWidth) / 2, backgroundColor: 'white', opacity: 0.8}}/>
+                <SquareConner size={cameraWidth}/>
+                <View style={{height: cameraWidth, width: (width - cameraWidth) / 2, backgroundColor: 'white', opacity: 0.8}}/>
               </View>
 
-              {
-                this.state.metadata.type === 'FILE' &&
-                <View style={styles.metadataEntry}>
-                  <Text style={styles.metadataTitle}> File Name: </Text>
-                  <Text style={styles.metadataContent}> {this.state.metadata.name} </Text>
+              <View style={{flex: 1, backgroundColor: 'white', opacity: 0.9, alignItems: 'center'}}>
+                <View style={{
+                  marginTop: 10, marginHorizontal: 10, height: 10,
+                  borderRadius: 5,
+                  flexDirection: 'row'}}>
+                  {
+                    this.state.done && this.state.done.map((done, key) => (
+                      <View key={key} style={[{flex: progressWidth, backgroundColor: done ? 'green': '#ccc'}, getBorderRadius(key, this.state.done.length)]}/>
+                    ))
+                  }
                 </View>
-              }
 
-              <View style={styles.metadataEntry}>
-                <Text style={styles.metadataTitle}> Content Size: </Text>
-                <Text style={styles.metadataContent}> {this.state.metadata.size} </Text>
-              </View>
+                <Text style={{marginTop: 20, fontSize: 16, color: 'black',}}>{this.state.line}</Text>
 
-              <View style={styles.metadataEntry}>
-                <Text style={styles.metadataTitle}> QRCode Count: </Text>
-                <Text style={styles.metadataContent}> {this.state.metadata.count} </Text>
-              </View>
+                <View style={styles.metadata}>
+                  {this.state.status === 1 &&
+                  <View>
+                    <View style={styles.metadataEntry}>
+                      <Text style={styles.metadataTitle}> Content Type: </Text>
+                      <Text style={styles.metadataContent}> {this.state.metadata.type} </Text>
+                    </View>
 
-              <View style={styles.metadataEntry}>
-                <Text style={styles.metadataTitle}> MD5: </Text>
-                <Text style={[styles.metadataContent, {fontSize: 12}]}> {this.state.metadata.md5sum} </Text>
+                    {
+                      this.state.metadata.type === 'FILE' &&
+                      <View style={styles.metadataEntry}>
+                        <Text style={styles.metadataTitle}> File Name: </Text>
+                        <Text style={styles.metadataContent}> {this.state.metadata.name} </Text>
+                      </View>
+                    }
+
+                    <View style={styles.metadataEntry}>
+                      <Text style={styles.metadataTitle}> Content Size: </Text>
+                      <Text style={styles.metadataContent}> {this.state.metadata.size} </Text>
+                    </View>
+
+                    <View style={styles.metadataEntry}>
+                      <Text style={styles.metadataTitle}> QRCode Count: </Text>
+                      <Text style={styles.metadataContent}> {this.state.metadata.count} </Text>
+                    </View>
+
+                    <View style={styles.metadataEntry}>
+                      <Text style={styles.metadataTitle}> MD5: </Text>
+                      <Text style={[styles.metadataContent, {fontSize: 12}]}> {this.state.metadata.md5sum} </Text>
+                    </View>
+                  </View>
+                  }
+                </View>
+                <Button icon={{name: 'close', type: 'font-awesome', color: 'white'}}
+                        title={'Cancel'}
+                        buttonStyle={{backgroundColor: 'red'}}
+                        onPress={() => {this.onGoHome()}}/>
               </View>
             </View>
-            }
-          </View>
-          <View style={{flex: 0.6, flexDirection: 'row', alignSelf: 'center'}}>
-            <Button icon={{name: 'close', type: 'font-awesome', color: 'white'}}
-                    title={'Cancel'}
-                    buttonStyle={{backgroundColor: 'red'}}
-                    onPress={() => {this.onGoHome()}}/>
           </View>
         </View>
       </View>
@@ -185,6 +221,11 @@ export default class QRStreamCapture extends React.Component {
   }
 }
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white'
+  },
+
   bottomBar: {
     flex: 1,
     backgroundColor: 'transparent',
